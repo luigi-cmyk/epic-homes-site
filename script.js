@@ -68,7 +68,7 @@ if (form) {
     const isFormspree = endpoint && endpoint.indexOf('YOUR_FORM_ID') === -1 && endpoint.indexOf('formspree.io') !== -1;
 
     if (isFormspree) {
-      // Live Formspree endpoint — submit via fetch and stay on page
+      // Live Formspree endpoint — submit via fetch
       status.style.color = '';
       status.textContent = 'Sending...';
       try {
@@ -78,12 +78,20 @@ if (form) {
           body: data
         });
         if (response.ok) {
+          // Redirect to thank-you page if form specifies one (via _next hidden field)
+          const nextInput = form.querySelector('input[name="_next"]');
+          const nextUrl = nextInput && nextInput.value;
+          if (nextUrl) {
+            // Lead conversion fires on the thanks page itself — avoids double-counting
+            window.location.href = nextUrl;
+            return;
+          }
+          // Fallback: inline confirmation + fire conversion here
+          if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
+          if (typeof window.gtag === 'function') window.gtag('event', 'generate_lead');
           status.style.color = 'var(--gold)';
           status.textContent = '✓ Got it! We\'ll be in touch within one business day.';
           form.reset();
-          // Fire conversion event for FB Pixel / GA if loaded
-          if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
-          if (typeof window.gtag === 'function') window.gtag('event', 'generate_lead');
         } else {
           status.style.color = '#c0392b';
           status.textContent = 'Something went wrong. Please email info@theepichomes.com directly.';
