@@ -40,36 +40,79 @@ const io = new IntersectionObserver((entries) => {
 
 revealTargets.forEach(el => io.observe(el));
 
-// Contact form (mailto fallback — no backend)
+// Contact form — supports Formspree POST (when data-endpoint is set) or mailto fallback
 const form = document.getElementById('contactForm');
 const status = document.getElementById('formStatus');
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const data = new FormData(form);
-  const name = (data.get('name') || '').toString().trim();
-  const email = (data.get('email') || '').toString().trim();
-  const phone = (data.get('phone') || '').toString().trim();
-  const interest = (data.get('interest') || '').toString().trim();
-  const state = (data.get('state') || '').toString().trim();
-  const message = (data.get('message') || '').toString().trim();
-  const newsletter = data.get('newsletter') === 'yes' ? 'YES — add to priority list' : 'No';
 
-  if (!name || !email) {
-    status.style.color = '#c0392b';
-    status.textContent = 'Please fill in your name and email.';
-    return;
-  }
+if (form) {
+  // Auto-fill UTM tracking fields from the URL — used by ad campaigns
+  const params = new URLSearchParams(window.location.search);
+  ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(name => {
+    const input = form.querySelector(`input[name="${name}"]`);
+    if (input) input.value = params.get(name) || '';
+  });
 
-  const subject = encodeURIComponent(`Website inquiry — ${name} (${interest})`);
-  const body = encodeURIComponent(
-    `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nInterest: ${interest}\nState: ${state}\nPriority list: ${newsletter}\n\nMessage:\n${message}`
-  );
-  window.location.href = `mailto:info@theepichomes.com?subject=${subject}&body=${body}`;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const name = (data.get('name') || '').toString().trim();
+    const email = (data.get('email') || '').toString().trim();
 
-  status.style.color = '';
-  status.textContent = 'Opening your email client... Thanks for reaching out!';
-  form.reset();
-});
+    if (!name || !email) {
+      status.style.color = '#c0392b';
+      status.textContent = 'Please fill in your name and email.';
+      return;
+    }
+
+    const endpoint = form.getAttribute('data-endpoint');
+    const isFormspree = endpoint && endpoint.indexOf('YOUR_FORM_ID') === -1 && endpoint.indexOf('formspree.io') !== -1;
+
+    if (isFormspree) {
+      // Live Formspree endpoint — submit via fetch and stay on page
+      status.style.color = '';
+      status.textContent = 'Sending...';
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: data
+        });
+        if (response.ok) {
+          status.style.color = 'var(--gold)';
+          status.textContent = '✓ Got it! We\'ll be in touch within one business day.';
+          form.reset();
+          // Fire conversion event for FB Pixel / GA if loaded
+          if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
+          if (typeof window.gtag === 'function') window.gtag('event', 'generate_lead');
+        } else {
+          status.style.color = '#c0392b';
+          status.textContent = 'Something went wrong. Please email info@theepichomes.com directly.';
+        }
+      } catch (err) {
+        status.style.color = '#c0392b';
+        status.textContent = 'Network error. Please email info@theepichomes.com or call (978) 201-3507.';
+      }
+      return;
+    }
+
+    // Fallback: mailto (works without a backend, used by index.html)
+    const phone = (data.get('phone') || '').toString().trim();
+    const interest = (data.get('interest') || '').toString().trim();
+    const state = (data.get('state') || '').toString().trim();
+    const message = (data.get('message') || '').toString().trim();
+    const newsletter = data.get('newsletter') === 'yes' ? 'YES — add to priority list' : 'No';
+
+    const subject = encodeURIComponent(`Website inquiry — ${name} (${interest})`);
+    const body = encodeURIComponent(
+      `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nInterest: ${interest}\nState: ${state}\nPriority list: ${newsletter}\n\nMessage:\n${message}`
+    );
+    window.location.href = `mailto:info@theepichomes.com?subject=${subject}&body=${body}`;
+
+    status.style.color = '';
+    status.textContent = 'Opening your email client... Thanks for reaching out!';
+    form.reset();
+  });
+}
 
 // Newsletter form (mailto fallback — swap action to Mailchimp/ConvertKit later)
 const nlForm = document.getElementById('newsletterForm');
