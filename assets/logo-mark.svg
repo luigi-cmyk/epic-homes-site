@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" fill="none">
+  <!-- E: top navy bar -->
+  <rect x="8" y="12" width="58" height="13" fill="currentColor" opacity="0.95"/>
+  <!-- E: bottom navy bar -->
+  <rect x="8" y="75" width="58" height="13" fill="currentColor" opacity="0.95"/>
+  <!-- Middle gold bar (E mid + H crossbar) -->
+  <rect x="22" y="44" width="60" height="12" fill="var(--mark-gold, #c9a25f)"/>
+  <!-- H: right vertical gold -->
+  <rect x="82" y="12" width="13" height="76" fill="var(--mark-gold, #c9a25f)"/>
+</svg>
