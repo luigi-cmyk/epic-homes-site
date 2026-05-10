@@ -40,7 +40,7 @@ const io = new IntersectionObserver((entries) => {
 
 revealTargets.forEach(el => io.observe(el));
 
-// Contact form — supports Formspree POST (when data-endpoint is set) or mailto fallback
+// Contact form — submits to HubSpot Forms API (when data-hubspot-* set) and/or Formspree, with mailto fallback
 const form = document.getElementById('contactForm');
 const status = document.getElementById('formStatus');
 
@@ -51,6 +51,49 @@ if (form) {
     const input = form.querySelector(`input[name="${name}"]`);
     if (input) input.value = params.get(name) || '';
   });
+
+  // POST to HubSpot Forms API — returns true on success
+  async function submitToHubSpot(data) {
+    const portalId = form.getAttribute('data-hubspot-portal');
+    const formId = form.getAttribute('data-hubspot-form');
+    if (!portalId || !formId) return false;
+
+    const fullName = (data.get('name') || '').toString().trim();
+    const spaceIdx = fullName.indexOf(' ');
+    const firstName = spaceIdx === -1 ? fullName : fullName.slice(0, spaceIdx);
+    const lastName = spaceIdx === -1 ? '' : fullName.slice(spaceIdx + 1);
+
+    const fields = [
+      { name: 'firstname', value: firstName },
+      { name: 'lastname', value: lastName },
+      { name: 'email', value: (data.get('email') || '').toString() },
+      { name: 'phone', value: (data.get('phone') || '').toString() },
+      { name: 'state', value: (data.get('state') || '').toString() },
+      { name: 'message', value: (data.get('message') || '').toString() }
+    ].filter(f => f.value);
+
+    const payload = {
+      fields,
+      context: {
+        pageUri: window.location.href,
+        pageName: document.title
+      }
+    };
+
+    try {
+      const response = await fetch(
+        `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }
+      );
+      return response.ok;
+    } catch (err) {
+      return false;
+    }
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -66,18 +109,25 @@ if (form) {
 
     const endpoint = form.getAttribute('data-endpoint');
     const isFormspree = endpoint && endpoint.indexOf('YOUR_FORM_ID') === -1 && endpoint.indexOf('formspree.io') !== -1;
+    const hasHubSpot = !!(form.getAttribute('data-hubspot-portal') && form.getAttribute('data-hubspot-form'));
 
-    if (isFormspree) {
-      // Live Formspree endpoint — submit via fetch
+    if (isFormspree || hasHubSpot) {
       status.style.color = '';
       status.textContent = 'Sending...';
       try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Accept': 'application/json' },
-          body: data
-        });
-        if (response.ok) {
+        // Submit to HubSpot and Formspree in parallel — succeed if either accepts the lead
+        const [hubspotOk, formspreeResponse] = await Promise.all([
+          hasHubSpot ? submitToHubSpot(data) : Promise.resolve(false),
+          isFormspree ? fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+            body: data
+          }) : Promise.resolve(null)
+        ]);
+
+        const formspreeOk = formspreeResponse ? formspreeResponse.ok : false;
+
+        if (hubspotOk || formspreeOk) {
           // Redirect to thank-you page if form specifies one (via _next hidden field)
           const nextInput = form.querySelector('input[name="_next"]');
           const nextUrl = nextInput && nextInput.value;
@@ -103,7 +153,7 @@ if (form) {
       return;
     }
 
-    // Fallback: mailto (works without a backend, used by index.html)
+    // Fallback: mailto (works without a backend, used by index.html when neither HubSpot nor Formspree is configured)
     const phone = (data.get('phone') || '').toString().trim();
     const interest = (data.get('interest') || '').toString().trim();
     const state = (data.get('state') || '').toString().trim();
