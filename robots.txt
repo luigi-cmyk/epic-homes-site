@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Block tracking/private paths if any are added later
+Disallow: /thanks.html
+Disallow: /thanks-pt.html
+
+Sitemap: https://theepichomes.com/sitemap.xml
