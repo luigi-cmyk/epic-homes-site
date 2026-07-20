@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Epic Homes — Project Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy-900: #0a1628;
+    --navy-800: #0f1f3d;
+    --navy-700: #152a52;
+    --gold: #c9a25f;
+    --gold-light: #e0bd80;
+    --cream: #f7f3ec;
+    --gray-500: #737373;
+    --text: #1a1a1a;
+    --text-soft: #4a4a4a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  @page { size: letter; margin: 0; }
+  html, body { background: #fff; }
+  body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    line-height: 1.55;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  h1, h2, h3 { font-family: 'Playfair Display', serif; font-weight: 700; line-height: 1.12; letter-spacing: -0.02em; }
+  .page {
+    width: 8.5in; height: 11in;
+    position: relative; overflow: hidden;
+    page-break-after: always;
+    display: flex; flex-direction: column;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  /* ============ COVER ============ */
+  .cover { background: var(--navy-900); color: #fff; }
+  .cover__img {
+    position: absolute; inset: 0;
+    background: url('assets/hero-night.jpg') center 35% / cover no-repeat;
+    opacity: 0.55;
+  }
+  .cover__scrim {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(10,22,40,0.55) 0%, rgba(10,22,40,0.15) 45%, rgba(10,22,40,0.92) 100%);
+  }
+  .cover__inner {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; height: 100%;
+    padding: 0.9in 0.85in 0.8in;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; color: #fff; }
+  .brand svg { height: 46px; width: auto; }
+  .brand__name { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; letter-spacing: 0.16em; line-height: 1.2; }
+  .brand__name small { display: block; font-family: 'Inter', sans-serif; font-size: 8.5px; font-weight: 600; letter-spacing: 0.34em; color: var(--gold-light); }
+  .cover__spacer { flex: 1; }
+  .cover .eyebrow { margin-bottom: 14px; }
+  .eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold);
+  }
+  .cover h1 { font-size: 58px; color: #fff; margin-bottom: 18px; }
+  .cover__sub { font-size: 15px; color: rgba(255,255,255,0.85); max-width: 5.4in; font-weight: 300; }
+  .cover__rule { width: 56px; height: 3px; background: var(--gold); margin: 26px 0 22px; }
+  .cover__meta { display: flex; gap: 34px; font-size: 11.5px; color: rgba(255,255,255,0.75); letter-spacing: 0.04em; }
+  .cover__meta strong { display: block; color: var(--gold-light); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 3px; font-weight: 600; }
+
+  /* ============ INNER PAGES ============ */
+  .inner { padding: 0.62in 0.7in 0.55in; }
+  .pagehead { display: flex; align-items: baseline; justify-content: space-between; border-bottom: 2px solid var(--navy-900); padding-bottom: 12px; margin-bottom: 8px; }
+  .pagehead h2 { font-size: 26px; color: var(--navy-900); }
+  .pagehead .folio { font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray-500); font-weight: 600; }
+
+  .tag {
+    display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; padding: 5px 12px; border-radius: 3px; margin-bottom: 10px;
+  }
+  .tag--available { background: var(--gold); color: var(--navy-900); }
+  .tag--done { background: var(--navy-900); color: #fff; }
+
+  /* Featured project page */
+  .feat__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0 16px; }
+  .feat__grid .ph { border-radius: 5px; background-position: center; background-size: cover; background-repeat: no-repeat; }
+  .ph--hero  { grid-column: 1 / -1; height: 3.35in; background-image: url('assets/hero-night.jpg'); background-position: center 40%; }
+  .ph--front { height: 1.85in; background-image: url('assets/heritage-front.jpg'); }
+  .ph--back  { height: 1.85in; background-image: url('assets/heritage-back.jpg'); }
+  .feat h3 { font-size: 24px; color: var(--navy-900); margin-bottom: 6px; }
+  .feat p.desc { font-size: 12.5px; color: var(--text-soft); max-width: 6.6in; }
+  .feat__cols { display: grid; grid-template-columns: 1.15fr 1fr; gap: 0.35in; margin-top: 14px; }
+  .specs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .spec { background: var(--cream); border-radius: 5px; padding: 12px 10px; text-align: center; }
+  .spec strong { display: block; font-family: 'Playfair Display', serif; font-size: 21px; color: var(--navy-900); line-height: 1.1; }
+  .spec span { font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-500); font-weight: 600; }
+  .hl { list-style: none; }
+  .hl li { font-size: 11.5px; color: var(--text-soft); padding: 5px 0 5px 18px; position: relative; border-bottom: 1px solid #ece5d8; }
+  .hl li:last-child { border-bottom: none; }
+  .hl li::before { content: "✦"; position: absolute; left: 0; color: var(--gold); font-size: 10px; }
+
+  /* Delivered projects page */
+  .delivered { display: flex; flex-direction: column; gap: 16px; margin-top: 14px; flex: 1; }
+  .dcard { display: grid; grid-template-columns: 3.1in 1fr; gap: 0.3in; align-items: center; }
+  .dcard .ph { height: 2.55in; border-radius: 5px; background-position: center; background-size: cover; }
+  .ph--hudson { background-image: url('assets/hudson.jpg'); }
+  .ph--westford { background-image: url('assets/westford.jpg'); }
+  .ph--lowell { background-image: url('assets/lowell.jpg'); background-position: center 60%; }
+  .dcard h3 { font-size: 21px; color: var(--navy-900); margin-bottom: 5px; }
+  .dcard p { font-size: 12px; color: var(--text-soft); margin-bottom: 10px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 7px; }
+  .meta span {
+    font-size: 10px; font-weight: 600; color: var(--navy-800);
+    background: var(--cream); padding: 5px 11px; border-radius: 999px; letter-spacing: 0.03em;
+  }
+
+  /* ============ BACK COVER ============ */
+  .back { background: var(--navy-900); color: #fff; }
+  .back__inner { display: flex; flex-direction: column; height: 100%; padding: 0.9in 0.85in; position: relative; z-index: 2; }
+  .back__img { position: absolute; inset: 0; background: url('assets/neighborhood-aerial.jpg') center / cover no-repeat; opacity: 0.14; }
+  .back__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,22,40,0.35) 0%, rgba(10,22,40,0.75) 100%); }
+  .back h2 { font-size: 40px; color: #fff; margin: 16px 0 14px; }
+  .back p.lead { font-size: 14px; color: rgba(255,255,255,0.8); max-width: 5.2in; font-weight: 300; }
+  .back__contact { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 22px 30px; max-width: 6in; }
+  .back__contact div strong { display: block; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 5px; font-weight: 600; }
+  .back__contact div { font-size: 13px; color: rgba(255,255,255,0.92); }
+  .back__spacer { flex: 1; }
+  .back__foot { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(255,255,255,0.18); padding-top: 18px; }
+  .back__foot img { height: 64px; }
+  .back__foot small { font-size: 10px; color: rgba(255,255,255,0.55); letter-spacing: 0.06em; text-align: right; line-height: 1.7; }
+
+  .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e5ddcf; padding-top: 10px; }
+  .foot span { font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gray-500); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1 · COVER -->
+<div class="page cover">
+  <div class="cover__img"></div>
+  <div class="cover__scrim"></div>
+  <div class="cover__inner">
+    <div class="brand">
+      <svg viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="12" width="58" height="13" fill="currentColor" opacity="0.95"/>
+        <rect x="8" y="75" width="58" height="13" fill="currentColor" opacity="0.95"/>
+        <rect x="22" y="44" width="60" height="12" fill="#c9a25f"/>
+        <rect x="82" y="12" width="13" height="76" fill="#c9a25f"/>
+      </svg>
+      <div class="brand__name">EPIC HOMES<small>DEVELOPMENT</small></div>
+    </div>
+    <div class="cover__spacer"></div>
+    <p class="eyebrow">Project Portfolio · 2026</p>
+    <h1>Homes built to be<br>lived in for generations.</h1>
+    <p class="cover__sub">A selection of custom modern farmhouse and luxury homes designed, developed and delivered by Epic Homes across New England.</p>
+    <div class="cover__rule"></div>
+    <div class="cover__meta">
+      <div><strong>Serving</strong>MA · NH · RI · CT</div>
+      <div><strong>Licensed</strong>CSL 120115 · HIC 212727</div>
+      <div><strong>Contact</strong>(978) 201-3507 · theepichomes.com</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2 · FEATURED -->
+<div class="page inner feat">
+  <div class="pagehead">
+    <h2>Featured Project</h2>
+    <span class="folio">Epic Homes · Portfolio · 02</span>
+  </div>
+  <div class="feat__grid">
+    <div class="ph ph--hero"></div>
+    <div class="ph ph--front"></div>
+    <div class="ph ph--back"></div>
+  </div>
+  <span class="tag tag--available">Reserve Now · In Design</span>
+  <h3>33 Heritage Ct — Brockton, MA</h3>
+  <p class="desc">Single-family modern farmhouse on a hand-picked .47-acre lot in a private, selective neighborhood. Available to reserve before completion.</p>
+  <div class="feat__cols">
+    <div class="specs">
+      <div class="spec"><strong>2,500</strong><span>sq ft</span></div>
+      <div class="spec"><strong>4</strong><span>bedrooms</span></div>
+      <div class="spec"><strong>2.5</strong><span>baths</span></div>
+      <div class="spec"><strong>2</strong><span>car garage</span></div>
+    </div>
+    <ul class="hl">
+      <li>Pantry suite</li>
+      <li>Master with two oversized walk-in closets</li>
+      <li>.47-acre lot on a private street</li>
+      <li>Selective, established neighborhood</li>
+    </ul>
+  </div>
+  <div class="foot">
+    <span>Epic Homes Development</span>
+    <span>theepichomes.com</span>
+  </div>
+</div>
+
+<!-- PAGE 3 · DELIVERED -->
+<div class="page inner">
+  <div class="pagehead">
+    <h2>Delivered Homes</h2>
+    <span class="folio">Epic Homes · Portfolio · 03</span>
+  </div>
+  <div class="delivered">
+    <div class="dcard">
+      <div class="ph ph--hudson"></div>
+      <div>
+        <span class="tag tag--done">Delivered</span>
+        <h3>Hudson, NH</h3>
+        <p>Custom-built single-family home in a quiet established neighborhood.</p>
+        <div class="meta"><span>📍 Hudson, NH</span><span>📐 4,800 sq ft</span></div>
+      </div>
+    </div>
+    <div class="dcard">
+      <div class="ph ph--westford"></div>
+      <div>
+        <span class="tag tag--done">Delivered</span>
+        <h3>Westford, MA</h3>
+        <p>4-bedroom custom home with open-concept living and high-end finishes throughout.</p>
+        <div class="meta"><span>📍 Westford, MA</span><span>🛏 4 bedrooms</span><span>📐 3,200 sq ft</span></div>
+      </div>
+    </div>
+    <div class="dcard">
+      <div class="ph ph--lowell"></div>
+      <div>
+        <span class="tag tag--done">Delivered</span>
+        <h3>Lowell, MA</h3>
+        <p>Modern 3-bedroom home delivered turnkey — design, build and final walkthrough.</p>
+        <div class="meta"><span>📍 Lowell, MA</span><span>🛏 3 bed · 2 bath</span><span>📐 2,200 sq ft</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <span>Epic Homes Development</span>
+    <span>theepichomes.com</span>
+  </div>
+</div>
+
+<!-- PAGE 4 · BACK COVER -->
+<div class="page back">
+  <div class="back__img"></div>
+  <div class="back__scrim"></div>
+  <div class="back__inner">
+    <p class="eyebrow">Let's Talk</p>
+    <h2>Your home could be<br>the next page.</h2>
+    <p class="lead">From first coffee to front-door keys — we develop, build and deliver end to end, with one accountable team.</p>
+    <div class="back__contact">
+      <div><strong>Office</strong>97 Central St, STE 204<br>Lowell, MA</div>
+      <div><strong>Phone</strong>(978) 201-3507</div>
+      <div><strong>Email</strong>info@theepichomes.com</div>
+      <div><strong>Web</strong>theepichomes.com</div>
+    </div>
+    <div class="back__spacer"></div>
+    <div class="back__foot">
+      <div class="brand">
+        <svg viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="12" width="58" height="13" fill="currentColor" opacity="0.95"/>
+          <rect x="8" y="75" width="58" height="13" fill="currentColor" opacity="0.95"/>
+          <rect x="22" y="44" width="60" height="12" fill="#c9a25f"/>
+          <rect x="82" y="12" width="13" height="76" fill="#c9a25f"/>
+        </svg>
+        <div class="brand__name">EPIC HOMES<small>DEVELOPMENT</small></div>
+      </div>
+      <small>Epic Homes Development · Lumi Construction Management · Ground Tech<br>Licensed &amp; insured — CSL 120115 · HIC 212727</small>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
